@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { useState } from 'react';
 import { CompletionInfoFlags } from 'typescript';
+import { TIMEOUT } from 'dns';
 
 
 
@@ -24,53 +25,46 @@ type person = {
 
 }
 
-// type todo = {
-//   id: number;
-//   name: string;
-//   done: boolean;
-// }
-
-// const data = fetch('http://localhost:5000/tasks').then((response) => response.json());
-// console.log(data);
-
-
-
-
 function App() {
-  let person= ({
+  const [personState,setPersonState] = useState<person>({
     name: "Veronica",
     theme: {backgroundColor: 'black',color: 'aqua',width: '750px' ,margin: 'auto',padding: '150px'},
     today: new Date(),
-    tasks: [
-      { id: 1 ,
-        name: "Learn React", 
-        done: true
-      }, 
-      {
-        id: 2 ,
-        name: "Learn TypeScript", 
-        done: true
-      }, 
-      {
-        id: 3 ,
-        name: "Learn Redux", 
-        done: false
-      },
-      {
-        id: 4 ,
-        name: "Learn LLM", 
-        done: false
-      }
-    ]
+    tasks: []
   });
 
 
-  const [personState,setPersonState] = useState<person>(person)
+  // const [personState,setPersonState] = useState<person>(person)
   const [addtask, setAddtask] = useState<string>('');
   const [taskcomplition, setTaskcomplition] = useState<boolean>(false);
-  const [taskId, setTaskId] = useState<number>(person.tasks.length + 1);
+  const [taskId, setTaskId] = useState<number>((personState.tasks.length)+1);
   const [checked, setChecked] = useState<boolean>(false);
+  const [Loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState(false);
   
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(false);
+
+    try {
+      const response = await fetch('http://localhost:8000/tasks')
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      setPersonState({...personState,tasks:data});
+      }
+      catch (err) {
+        setError(true);
+      }
+      finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+    },[])
 
   function handlesubmitTask(){
     console.log(taskId, addtask, taskcomplition)
@@ -83,13 +77,13 @@ function App() {
       tasks: [...personState.tasks, {id: taskId, name: addtask, done: taskcomplition}]  
     }
     setPersonState(newTasks) 
-    person.tasks = newTasks.tasks;
+    personState.tasks = newTasks.tasks;
     setAddtask('');
     
   }
 
  
-  function handleTaskCompletionChange(task: { id: number; done: boolean }) {
+   function handleTaskCompletionChange(task: { id: number; done: boolean }) {
     const updatedTasks = personState.tasks.map((existingTask) =>
       existingTask.id === task.id ? { ...existingTask, done: !task.done } : existingTask
       );
@@ -98,6 +92,7 @@ function App() {
         ...personState,
         tasks: updatedTasks,
       });
+    
     }
 
   function handleRemove(task: { id: number; done: boolean }) {
@@ -106,7 +101,7 @@ function App() {
       existingTask.id !== task.id
       );
 
-      person.tasks = updatedTasks;
+      personState.tasks = updatedTasks;
 
       setPersonState({
         ...personState,
@@ -115,9 +110,10 @@ function App() {
       
     }
 
-    function handleCompleted() {
+    async function handleCompleted() {
       if (checked === false) {
         setChecked(true);
+      
       
       const completedTasks = personState.tasks.filter((task) => task.done);
       setPersonState({
@@ -126,7 +122,13 @@ function App() {
       });
       }else {
         setChecked(false);
-        setPersonState(person);
+        const response = await fetch('http://localhost:8000/tasks')
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      setPersonState({...personState,tasks:data});
+    
       }
     }
      
@@ -176,7 +178,8 @@ function App() {
 
 
       <div >
-        
+        {Loading && <p>Loading....</p>}
+        {error && <p>Failed to fetch data</p>}        
         {personState.tasks.map((task) => (
           <label style={{display:'flex',margin:'20px',padding:'auto'}}>
             <input 
