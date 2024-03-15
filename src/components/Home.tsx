@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import TodoList from "./TodoList";
 import useFetch from "./useFetch";
 
