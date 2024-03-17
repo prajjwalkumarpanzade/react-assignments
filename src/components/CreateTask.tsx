@@ -3,7 +3,9 @@ import { GenerateRandomNo } from "../helper/helper";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { toast } from "react-toastify";
-import { fetchCreate } from "../service/fetchData";
+import { post } from "../services/api";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const CreateTask = () => {
   const navigate = useNavigate();
@@ -19,6 +21,10 @@ const CreateTask = () => {
       .date()
       .min(new Date(), "Due date cannot be less than today !!")
       .required("Due Date is required"),
+  });
+
+  const { mutate, isSuccess } = useMutation<any, Error, object, unknown>({
+    mutationFn: (todoItem) => post("/todos", todoItem),
   });
 
   const { handleSubmit, handleChange, handleBlur, values, errors, touched } =
@@ -39,13 +45,16 @@ const CreateTask = () => {
           isComplete: false,
           dueDate: values.dueDate,
         };
-
-        if (await fetchCreate(todoItem)) {
-          toast.success("Task Added Successfully !!");
-          navigate("/");
-        }
+        mutate(todoItem);
       },
     });
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Task Added Successfully !!");
+      navigate("/");
+    }
+  }, [isSuccess]);
 
   return (
     <div className="task mt-5" style={{ marginLeft: "500px" }}>

@@ -1,8 +1,10 @@
 import useFetch from "./useFetch";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { fetchDelete } from "../service/fetchData";
 import { toast } from "react-toastify";
+import { deleteReq } from "../services/api";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const Taskdetails = () => {
   const navigate = useNavigate();
@@ -14,12 +16,20 @@ const Taskdetails = () => {
     data: todoItem,
   }: any = useFetch(process.env.REACT_APP_BASE_URL + routes + id);
 
+  const { mutate, isSuccess } = useMutation({
+    mutationFn: (id) => deleteReq(id),
+  });
+
   const handleDelete = async () => {
-    if (await fetchDelete(id)) {
+    mutate();
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
       toast.warning("Task Successfully Deleted !!");
       navigate("/");
     }
-  };
+  }, [isSuccess]);
 
   return (
     <div className="task-details text-center">

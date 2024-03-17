@@ -8,24 +8,33 @@ import Taskdetails from "./components/Taskdetails";
 import CreateTask from "./components/CreateTask";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="contents">
-      <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />}></Route>
+    <QueryClientProvider client={queryClient}>
+      <div className="contents">
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />}></Route>
 
-          <Route path="/create" element={<CreateTask />}></Route>
+            <Route path="/create" element={<CreateTask />}></Route>
 
-          <Route path="/task/:id" element={<Taskdetails />}></Route>
+            <Route path="/task/:id" element={<Taskdetails />}></Route>
 
-          <Route path="*" element={<NotFound />}></Route>
-        </Routes>
-      </BrowserRouter>{" "}
-      <ToastContainer autoClose={3000} />
-    </div>
+            <Route path="*" element={<NotFound />}></Route>
+          </Routes>
+        </BrowserRouter>{" "}
+        <ToastContainer autoClose={3000} />
+      </div>
+    </QueryClientProvider>
   );
 }
 

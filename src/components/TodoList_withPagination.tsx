@@ -1,24 +1,27 @@
+
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ITodoElement, Props } from "../types/todo";
+import { ITodoElement } from "../types/todo";
 import { fetchGet, fetchPatch } from "../services/api";
 import { useQuery } from "@tanstack/react-query";
 
-const TodoList = ({ todos }: Props) => {
+const TodoList_withPagination = () => {
   const navigate = useNavigate();
-  const [checked, setChecked] = useState(false);
-  const [search, setSearch] = useState("");
+  const [checked, setChecked] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
   const [sortDirection, setSortDirection] = useState("0");
-  //const [filteredTodos, setFilteredTodos] = useState(todos); //Optional, when using useEffect only
-  const pageSize = 3;
-  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 4;
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [pageNumber, setPageNumber] = useState<number>(1);
 
   const handleStatus = (item: ITodoElement) => {
     setChecked(!checked);
     item.isComplete = !item.isComplete;
     const updatedItem = { ...item, isComplete: !item.isComplete };
 
-    fetchPatch("/todos/" + item.id, updatedItem).then((res) => res);
+    fetchPatch("/todos/" + item.id, updatedItem).then((res) => {
+      console.log(res);
+    });
   };
 
   const handleCard = (item: ITodoElement) => {
@@ -26,26 +29,32 @@ const TodoList = ({ todos }: Props) => {
   };
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["todo"],
-    queryFn: () => {
-      return fetchGet("/todos", { _limit: pageSize, _page: pageNumber }).then(
-        (res) => res.data
-      );
+    queryKey: [pageNumber, pageSize, search, checked],
+    queryFn: async () => {
+      const res = await fetchGet("/todos", {
+        _page: pageNumber,
+        _limit: pageSize,
+        _sort: "title",
+        // isComplete_like: checked,
+      });
+      setTotalPages(Math.ceil(res.headers["x-total-count"] / pageSize));
+      return res.data;
     },
   });
-
   // useEffect(()=>{
   //   setFilteredTodos(todos.filter((todo)=>todo.task.includes(search)))
   // },[search, filteredTodos])
   //or
-  const filterTodo = useMemo(
-    () => todos.filter((todo) => todo.task.includes(search)),
-    [search, todos]
-  );
+  const filterTodo = useMemo(() => {
+    if (data && Array.isArray(data)) {
+      return data.filter((todo: any) => todo.task.includes(search));
+    }
+    return [];
+  }, [search, data]);
 
   const sortedTodos = useMemo(
     () =>
-      filterTodo.sort((a, b) =>
+      filterTodo.sort((a: any, b: any) =>
         sortDirection === "0"
           ? a.task > b.task
             ? 1
@@ -54,16 +63,8 @@ const TodoList = ({ todos }: Props) => {
           ? -1
           : 1
       ),
-    [filterTodo, sortDirection]
+    [filterTodo, sortDirection, data]
   );
-
-  const handlePrevClick = () => {
-    setPageNumber(pageNumber - 1);
-  };
-  const handleNextClick = () => {
-    setPageNumber(pageNumber + 1);
-  };
-
   return (
     <div className="blog-list text-center">
       <div style={{ display: "flex" }} className="justify-content-center">
@@ -87,8 +88,9 @@ const TodoList = ({ todos }: Props) => {
         </select>
       </div>
       {isPending && <p>Loading...</p>}
-      {sortedTodos.map((item) => (
-        <center>
+      {error && <p>Failed to fetch the data !!</p>}
+      {sortedTodos.map((item: any) => (
+        <center key={item.id}>
           <div
             className="card w-50"
             key={item.id}
@@ -126,14 +128,26 @@ const TodoList = ({ todos }: Props) => {
         </center>
       ))}
       <div className="footer">
-        <button onClick={handlePrevClick} disabled={pageNumber === 1}>
+        <button
+          className="btn btn-secondary m-2"
+          onClick={() => setPageNumber(pageNumber - 1)}
+          disabled={pageNumber === 1}
+        >
           Prev
         </button>
-        {pageNumber}
-        <button onClick={handleNextClick}>Next</button>
+        <b>
+          {pageNumber}/{totalPages}
+        </b>
+        <button
+          className="btn btn-secondary m-2"
+          onClick={() => setPageNumber(pageNumber + 1)}
+          disabled={pageNumber == totalPages}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
 };
 
-export default TodoList;
+export default TodoList_withPagination;

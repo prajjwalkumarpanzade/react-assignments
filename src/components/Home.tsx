@@ -1,4 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import TodoList from "./TodoList";
+import TodoList_withPagination from "./TodoList_withPagination";
 import useFetch from "./useFetch";
 
 const Home = () => {
@@ -12,7 +14,8 @@ const Home = () => {
     <div className="home">
       {error && <div>{error}</div>}
       {isPending && <div>Loading...</div>}
-      {todos && <TodoList todos={todos} />}
+      {/* {todos && <TodoList todos={todos} />} */}
+      <TodoList_withPagination />
     </div>
   );
 };
