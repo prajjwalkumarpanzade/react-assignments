@@ -3,42 +3,67 @@
     {
       "id": "1",
       "task": "Learn React",
-      "isComplete": true
+      "isComplete": true,
+      "dueDate": "2024-03-07",
+      "assignee": "Prajjwalkumar",
+      "description": "Do Assignment from scratch"
+
     },
     {
       "id": "2",
       "task": "Learn TypeScript",
-      "isComplete": true
+      "isComplete": true,
+      "dueDate": "2024-03-09",
+      "assignee": "Prajjwalkumar",
+      "description": "Do Assignment of Typescript"
     },
     {
       "id": "3",
       "task": "Learn Redux",
-      "isComplete": false
+      "isComplete": false,
+      "dueDate": "2024-03-10",
+      "assignee": "Prajjwalkumar",
+      "description": "Do Assignment of redux"
     },
     {
       "id": "4",
       "task": "Learn LLM",
-      "isComplete": false
+      "isComplete": false,
+      "dueDate": "2024-03-07",
+      "assignee": "Prajjwalkumar",
+      "description": "Do Assignment from scratch"
     },
     {
       "id": "5",
       "task": "Hii",
-      "isComplete": false
+      "isComplete": false,
+      "dueDate": "2024-03-07",
+      "assignee": "Prajjwalkumar",
+      "description": "Do Assignment from scratch"
     },
     {
       "id": "6",
       "task": "Hello",
-      "isComplete": false
+      "isComplete": false,
+      "dueDate": "2024-03-07",
+      "assignee": "Prajjwalkumar",
+      "description": "Do Assignment from scratch"
     },
     {
       "id": "\"792.0931773145878\"",
       "task": "Hii",
-      "isComplete": false
+      "isComplete": false,
+      "dueDate": "2024-03-07",
+      "assignee": "Prajjwalkumar",
+      "description": "Do Assignment from scratch"
     },
     {
       "id": "\"1626.7829554674402\"",
       "task": "zafdsf",
-      "isComplete": true
+      "isComplete": true,
+      "dueDate": "2024-03-07",
+      "assignee": "Prajjwalkumar",
+      "description": "Do Assignment from scratch"
     }
   ]
 }

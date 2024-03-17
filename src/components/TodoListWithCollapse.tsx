@@ -12,11 +12,11 @@ interface Props {
   todos: ITodoElement[];
 }
 
-const TodoList = ({ todos }: Props) => {
+const TodoListWithCollapse = ({ todos }: Props) => {
   const [checked, setChecked] = useState(false);
   const [search, setSearch] = useState("");
-  //const [filteredTodos, setFilteredTodos] = useState(todos); //Optional, when using useEffect only
   const [sortDirection, setSortDirection] = useState("0");
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleStatus = (item: ITodoElement) => {
@@ -28,10 +28,10 @@ const TodoList = ({ todos }: Props) => {
     navigate(`/task/${item.id}`);
   };
 
-  // useEffect(()=>{
-  //   setFilteredTodos(todos.filter((todo)=>todo.task.includes(search)))
-  // },[search, filteredTodos])
-  //or
+  const handleToggleDetails = (itemId: string) => {
+    setExpandedItemId(expandedItemId === itemId ? null : itemId);
+  };
+
   const filterTodo = useMemo(
     () => todos.filter((todo) => todo.task.includes(search)),
     [search, todos]
@@ -56,7 +56,7 @@ const TodoList = ({ todos }: Props) => {
       <div style={{ display: "flex" }} className="justify-content-center">
         <input
           type="text"
-          placeholder="Search Todos"
+          placeholder="search todos"
           value={search}
           className="m-2"
           onChange={(e) => setSearch(e.target.value)}
@@ -75,10 +75,9 @@ const TodoList = ({ todos }: Props) => {
       </div>
 
       {sortedTodos.map((item) => (
-        <center>
+        <center key={item.id}>
           <div
             className="card w-50"
-            key={item.id}
             style={{
               border: "0.1px solid grey",
               margin: "10px",
@@ -107,6 +106,22 @@ const TodoList = ({ todos }: Props) => {
               <p className="card-text">
                 <strong>Status :</strong>{" "}
                 {item.isComplete ? "Completed" : "Incomplete"}&nbsp;&nbsp;
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => handleToggleDetails(item.id)}
+                  aria-expanded={expandedItemId === item.id}
+                  aria-controls={`CE${item.id}`}
+                >
+                  Description
+                </button>
+                <div
+                  className={`collapse ${
+                    expandedItemId === item.id ? "show" : ""
+                  }`}
+                  id={`CE${item.id}`}
+                >
+                  <div className="card card-body">{item.description}</div>
+                </div>
               </p>
             </div>
           </div>
@@ -116,4 +131,4 @@ const TodoList = ({ todos }: Props) => {
   );
 };
 
-export default TodoList;
+export default TodoListWithCollapse;
