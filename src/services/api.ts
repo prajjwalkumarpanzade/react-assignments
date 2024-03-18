@@ -5,11 +5,11 @@ const instance = axios.create({
 });
 
 export const fetchGet = (url: string, params: any) => {
-  return instance.get(url, { params }).then((res) => res);
+  return instance.get(url, { params }).then((res: any) => res);
 };
 
 export const post = (url: string, payload: any) => {
-  return instance.post(url, payload).then((res) => res.data);
+  return instance.post(url, payload).then((res: any) => res.data);
 };
 
 export const deleteReq = (id: any) => {
@@ -18,5 +18,5 @@ export const deleteReq = (id: any) => {
 
 export const fetchPatch = (url: string, payload: any) => {
   console.log("in patch !!");
-  return instance.patch(url, payload).then((res) => res.data);
+  return instance.patch(url, payload).then((res: any) => res.data);
 };

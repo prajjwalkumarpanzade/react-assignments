@@ -3,9 +3,9 @@ import { GenerateRandomNo } from "../helper/helper";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { toast } from "react-toastify";
-import { post } from "../services/api";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { post } from "../services/api";
 
 const CreateTask = () => {
   const navigate = useNavigate();

@@ -1,27 +1,45 @@
-
-import { useMemo, useState } from "react";
+import { useMemo, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { ITodoElement } from "../types/todo";
 import { fetchGet, fetchPatch } from "../services/api";
 import { useQuery } from "@tanstack/react-query";
 
+const initialValues = {
+  checked: false,
+  search: "",
+  sortDirection: "0",
+  totalPages: 1,
+  pageNumber: 1,
+};
+
+const reducer = (currentState: any, action: any) => {
+  switch (action.type) {
+    case "setChecked":
+      return { ...currentState, checked: action.value };
+    case "setSearch":
+      return { ...currentState, search: action.value };
+    case "setSortDirection":
+      return { ...currentState, sortDirection: action.value };
+    case "setTotalPages":
+      return { ...currentState, totalPages: action.value };
+    case "setPageNumber":
+      return { ...currentState, pageNumber: action.value };
+  }
+};
+
 const TodoList_withPagination = () => {
   const navigate = useNavigate();
-  const [checked, setChecked] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
-  const [sortDirection, setSortDirection] = useState("0");
   const pageSize = 4;
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [state, dispatch] = useReducer(reducer, initialValues);
 
   const handleStatus = (item: ITodoElement) => {
-    setChecked(!checked);
-    item.isComplete = !item.isComplete;
+    dispatch({ type: "setChecked", value: !state.checked });
     const updatedItem = { ...item, isComplete: !item.isComplete };
 
-    fetchPatch("/todos/" + item.id, updatedItem).then((res) => {
+    fetchPatch("/todos/" + item.id, updatedItem).then((res: any) => {
       console.log(res);
     });
+    item.isComplete = !item.isComplete;
   };
 
   const handleCard = (item: ITodoElement) => {
@@ -29,15 +47,18 @@ const TodoList_withPagination = () => {
   };
 
   const { data, isPending, error } = useQuery({
-    queryKey: [pageNumber, pageSize, search, checked],
+    queryKey: [state.pageNumber, pageSize, state.search, state.checked],
     queryFn: async () => {
       const res = await fetchGet("/todos", {
-        _page: pageNumber,
+        _page: state.pageNumber,
         _limit: pageSize,
         _sort: "title",
         // isComplete_like: checked,
       });
-      setTotalPages(Math.ceil(res.headers["x-total-count"] / pageSize));
+      dispatch({
+        type: "setTotalPages",
+        value: Math.ceil(res.headers["x-total-count"] / pageSize),
+      });
       return res.data;
     },
   });
@@ -47,15 +68,15 @@ const TodoList_withPagination = () => {
   //or
   const filterTodo = useMemo(() => {
     if (data && Array.isArray(data)) {
-      return data.filter((todo: any) => todo.task.includes(search));
+      return data.filter((todo: any) => todo.task.includes(state.search));
     }
     return [];
-  }, [search, data]);
+  }, [state.search, data]);
 
   const sortedTodos = useMemo(
     () =>
       filterTodo.sort((a: any, b: any) =>
-        sortDirection === "0"
+        state.sortDirection === "0"
           ? a.task > b.task
             ? 1
             : -1
@@ -63,7 +84,7 @@ const TodoList_withPagination = () => {
           ? -1
           : 1
       ),
-    [filterTodo, sortDirection, data]
+    [filterTodo, state.sortDirection, data]
   );
   return (
     <div className="blog-list text-center">
@@ -71,16 +92,20 @@ const TodoList_withPagination = () => {
         <input
           type="text"
           placeholder="Search Todos"
-          value={search}
+          value={state.search}
           className="m-2"
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) =>
+            dispatch({ type: "setSearch", value: e.target.value })
+          }
         />
 
         <label htmlFor="Sort" className="m-2">
           Sort :
         </label>
         <select
-          onChange={(e) => setSortDirection(e.target.value)}
+          onChange={(e) =>
+            dispatch({ type: "setSortDirection", value: e.target.value })
+          }
           className="m-2"
         >
           <option value={"0"}>A-Z</option>
@@ -130,18 +155,22 @@ const TodoList_withPagination = () => {
       <div className="footer">
         <button
           className="btn btn-secondary m-2"
-          onClick={() => setPageNumber(pageNumber - 1)}
-          disabled={pageNumber === 1}
+          onClick={() =>
+            dispatch({ type: "setPageNumber", value: state.pageNumber - 1 })
+          }
+          disabled={state.pageNumber === 1}
         >
           Prev
         </button>
         <b>
-          {pageNumber}/{totalPages}
+          {state.pageNumber}/{state.totalPages}
         </b>
         <button
           className="btn btn-secondary m-2"
-          onClick={() => setPageNumber(pageNumber + 1)}
-          disabled={pageNumber == totalPages}
+          onClick={() =>
+            dispatch({ type: "setPageNumber", value: state.pageNumber + 1 })
+          }
+          disabled={state.pageNumber == state.totalPages}
         >
           Next
         </button>

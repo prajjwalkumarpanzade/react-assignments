@@ -1,4 +1,5 @@
 import "./App.css";
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar";
@@ -19,7 +20,7 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="contents">
+      
         <BrowserRouter>
           <Navbar />
           <Routes>
@@ -32,8 +33,8 @@ function App() {
             <Route path="*" element={<NotFound />}></Route>
           </Routes>
         </BrowserRouter>{" "}
-        <ToastContainer autoClose={3000} />
-      </div>
+        <ToastContainer autoClose={8000} />
+      
     </QueryClientProvider>
   );
 }

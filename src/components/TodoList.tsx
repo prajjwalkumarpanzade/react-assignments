@@ -1,38 +1,32 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ITodoElement, Props } from "../types/todo";
-import { fetchGet, fetchPatch } from "../services/api";
-import { useQuery } from "@tanstack/react-query";
+
+interface ITodoElement {
+  id: string;
+  task: string;
+  description: string;
+  isComplete: boolean;
+}
+
+interface Props {
+  todos: ITodoElement[];
+}
 
 const TodoList = ({ todos }: Props) => {
-  const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
   const [search, setSearch] = useState("");
-  const [sortDirection, setSortDirection] = useState("0");
   //const [filteredTodos, setFilteredTodos] = useState(todos); //Optional, when using useEffect only
-  const pageSize = 3;
-  const [pageNumber, setPageNumber] = useState(1);
+  const [sortDirection, setSortDirection] = useState("0");
+  const navigate = useNavigate();
 
   const handleStatus = (item: ITodoElement) => {
     setChecked(!checked);
     item.isComplete = !item.isComplete;
-    const updatedItem = { ...item, isComplete: !item.isComplete };
-
-    fetchPatch("/todos/" + item.id, updatedItem).then((res) => res);
   };
 
   const handleCard = (item: ITodoElement) => {
     navigate(`/task/${item.id}`);
   };
-
-  const { data, isPending, error } = useQuery({
-    queryKey: ["todo"],
-    queryFn: () => {
-      return fetchGet("/todos", { _limit: pageSize, _page: pageNumber }).then(
-        (res) => res.data
-      );
-    },
-  });
 
   // useEffect(()=>{
   //   setFilteredTodos(todos.filter((todo)=>todo.task.includes(search)))
@@ -57,13 +51,6 @@ const TodoList = ({ todos }: Props) => {
     [filterTodo, sortDirection]
   );
 
-  const handlePrevClick = () => {
-    setPageNumber(pageNumber - 1);
-  };
-  const handleNextClick = () => {
-    setPageNumber(pageNumber + 1);
-  };
-
   return (
     <div className="blog-list text-center">
       <div style={{ display: "flex" }} className="justify-content-center">
@@ -86,7 +73,7 @@ const TodoList = ({ todos }: Props) => {
           <option value={"1"}>Z-A</option>
         </select>
       </div>
-      {isPending && <p>Loading...</p>}
+
       {sortedTodos.map((item) => (
         <center>
           <div
@@ -125,13 +112,6 @@ const TodoList = ({ todos }: Props) => {
           </div>
         </center>
       ))}
-      <div className="footer">
-        <button onClick={handlePrevClick} disabled={pageNumber === 1}>
-          Prev
-        </button>
-        {pageNumber}
-        <button onClick={handleNextClick}>Next</button>
-      </div>
     </div>
   );
 };

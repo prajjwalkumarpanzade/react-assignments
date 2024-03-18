@@ -1,10 +1,10 @@
-import useFetch from "./useFetch";
+import useFetch from "../custom_hooks/useFetch";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { deleteReq } from "../services/api";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { deleteReq } from "../services/api";
 
 const Taskdetails = () => {
   const navigate = useNavigate();

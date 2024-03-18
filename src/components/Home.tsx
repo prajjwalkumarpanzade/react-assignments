@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import TodoList from "./TodoList";
 import TodoList_withPagination from "./TodoList_withPagination";
-import useFetch from "./useFetch";
+import useFetch from "../custom_hooks/useFetch";
 
 const Home = () => {
   const {
