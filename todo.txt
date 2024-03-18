@@ -1,4 +1,0 @@
-divide whole project
-use state 
-add action on button
-
