@@ -27,7 +27,7 @@
     {
       "id": "4",
       "task": "Learn LLM",
-      "isComplete": false,
+      "isComplete": true,
       "dueDate": "2024-03-07",
       "assignee": "Prajjwalkumar",
       "description": "Do Assignment from scratch"

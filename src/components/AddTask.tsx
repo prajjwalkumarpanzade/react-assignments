@@ -1,3 +1,4 @@
+
 //**** Instead this Added New Component(CreateTask), this is only for Future Ref. Purpose */
 
 import { useState, FormEvent } from "react";
@@ -5,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { GenerateRandomNo } from "../helper/helper";
 
 const AddTask = () => {
-  const [title, setTitle] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [title, setTitle] = useState<string>("");
+  const [dueDate, setDueDate] = useState<string>("");
   const navigate = useNavigate();
 
   const addTodo = (e: FormEvent<HTMLFormElement>) => {

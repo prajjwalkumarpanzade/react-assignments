@@ -1,3 +1,5 @@
+//**** Instead this Added New Component(TodoList_withPaination), this is only for Future Ref. Purpose */
+
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,9 +15,9 @@ interface Props {
 }
 
 const TodoListWithCollapse = ({ todos }: Props) => {
-  const [checked, setChecked] = useState(false);
-  const [search, setSearch] = useState("");
-  const [sortDirection, setSortDirection] = useState("0");
+  const [checked, setChecked] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<string>("0");
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const navigate = useNavigate();
 
